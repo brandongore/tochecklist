@@ -7,8 +7,8 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "tochecklist",
-    "version": "0.0.0"
+    "productName": "ToCheckList",
+    "version": "1.0.0"
   },
   "tauri": {
     "allowlist": {
@@ -35,10 +35,9 @@
         "icons/32x32.png",
         "icons/128x128.png",
         "icons/128x128@2x.png",
-        "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.brandongore.tochecklist",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -65,10 +64,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 800,
         "resizable": true,
-        "title": "tochecklist",
-        "width": 800
+        "title": "ToCheckList",
+        "width": 600
       }
     ]
   }

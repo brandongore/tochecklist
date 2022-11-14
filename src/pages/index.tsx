@@ -1,45 +1,45 @@
 import { useState, useEffect } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
-import Image from "next/image";
-import { open } from "@tauri-apps/api/dialog";
 import * as fs from "@tauri-apps/api/fs";
+import Agenda from "./components/agenda";
+import AddTask from "./components/addTask";
+import AddChecklist from "./components/addChecklist";
+import { Config } from "../types/Config";
+import { CheckListType } from "../types/CheckListType";
 
 function App() {
-  const [newTask, setNewTask] = useState({});
-  const [config, setConfig] = useState({});
+  const [config, setConfig] = useState<Config>({checklists: []} as Config);
+  const [activeTasks, setActiveTasks] = useState<CheckListType[]>([]);
 
   useEffect(() => {
     (async () => {
-      const configExists = await fs.exists('config.json', {dir: fs.BaseDirectory.Resource});
+      const configExists = await fs.exists('config.json', { dir: fs.BaseDirectory.Resource });
 
       if (configExists) {
-        const configJson  = await fs.readTextFile('config.json', {dir: fs.BaseDirectory.Resource});
+        const configJson = await fs.readTextFile('config.json', { dir: fs.BaseDirectory.Resource });
         setConfig(JSON.parse(configJson))
+        console.log(config.checklists);
       }
     })();
   }, []);
 
-  async function add() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    //setGreetMsg(await invoke("greet", { name }));
+  function addChecklist(index) {
+    setActiveTasks([...activeTasks, Object.assign({}, config.checklists[index])]);
+  }
+
+  function addTask(name) {
+    setActiveTasks([...activeTasks, {"name":"TODO", items:[name]} as CheckListType]);
+  }
+
+  function deleteChecklist(index) {
+    setActiveTasks([...activeTasks.filter((_val, checkListIndex) => { return checkListIndex !== index})]);
   }
 
   return (
     <div className="container">
-      <h1>Choose a checklist below to start</h1>
-
-      <div className="row">
-        <div>
-          <input
-            id="task-input"
-            onChange={(e) => setNewTask(e.currentTarget.value)}
-            placeholder="Enter a new task..."
-          />
-          <button type="button" onClick={() => add()}>
-            Add
-          </button>
-        </div>
-      </div>
+      <h2>Choose a checklist below to start</h2>
+      <AddChecklist items={config.checklists} onClick={(index) => addChecklist(index)}></AddChecklist>
+      <Agenda items={activeTasks} onComplete={(index) => deleteChecklist(index)}></Agenda>
+      <AddTask onClick={(name) => addTask(name)}></AddTask>
     </div>
   );
 }

@@ -16,11 +16,15 @@
 
 .container {
   margin: 0;
-  padding-top: 10vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   text-align: center;
+}
+
+.container > h2 {
+  margin-top: 2px;
+  margin-bottom: 10px;
 }
 
 .logo {
@@ -28,10 +32,6 @@
   padding: 1.5em;
   will-change: filter;
   transition: 0.75s;
-}
-
-.logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
 }
 
 .row {
@@ -80,10 +80,6 @@ button {
   outline: none;
 }
 
-#greet-input {
-  margin-right: 5px;
-}
-
 @media (prefers-color-scheme: dark) {
   :root {
     color: #f6f6f6;
@@ -98,5 +94,7 @@ button {
   button {
     color: #ffffff;
     background-color: #0f0f0f98;
+    border: white;
+    border: 1px solid rgb(139, 139, 139)
   }
 }
