@@ -46,8 +46,8 @@ The application looks for a config.json file in the folder where the exe is loca
 
 Initial load
 
-![Empty](./Media/Tochecklist_empty.png)
+![Empty](./media/Tochecklist_empty.png)
 
 After adding some checklists
 
-![Empty](./Media/Tochecklist_full.png)
+![Empty](./media/Tochecklist_full.png)
