@@ -8,6 +8,12 @@ import Box from '@mui/material/Box';
 export default function AddTask(props) {
   const [newTask, setNewTask] = useState("");
 
+  function addNewTask(){
+    props.onClick(newTask)
+    let input: HTMLInputElement = document.querySelector<HTMLInputElement>("#task-input");
+    input.value = "";
+  }
+
   return (
     <Box sx={{ '& > :not(style)': { m: 1 } }}>
       <Stack direction="row" spacing={2}>
@@ -17,7 +23,7 @@ export default function AddTask(props) {
             onChange={(e) => setNewTask(e.currentTarget.value)}
             placeholder="Enter a new task..."
           />
-          <Fab sx={{ ml: 1 }}  size="medium" color="primary" aria-label="add" onClick={() => props.onClick(newTask)}>
+          <Fab sx={{ ml: 1 }}  size="medium" color="primary" aria-label="add" onClick={() => addNewTask()}>
             <AddIcon />
           </Fab>
         </div>
