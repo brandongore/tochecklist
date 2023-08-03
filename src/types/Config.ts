@@ -1,5 +1,5 @@
-import { CheckListType } from "./CheckListType";
+import { CheckListConfigType } from "./CheckListConfigType";
 
 export interface Config {
-    checklists: CheckListType[],
+    checklists: CheckListConfigType[],
 }

@@ -8,10 +8,10 @@ export default function Agenda(props) {
     return (
         <Box sx={{ padding: 1 }}>
         <Grid container spacing={0.5}>
-            {props?.items?.map((value: CheckListType, index: number) => {
+            {props?.items?.filter((checklist:CheckListType)=>{return !checklist.complete}).map((value: CheckListType, index: number) => {
                 return (
                     <Grid item xs={12} md={6}>
-                    <CheckListComponent value={value} onComplete={() => props.onComplete(index)}>
+                    <CheckListComponent value={value} onToggle={(todoId) => props.onToggle(value.id,todoId)}>
                         {value.name}
                     </CheckListComponent>
                     </Grid>

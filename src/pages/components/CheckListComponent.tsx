@@ -4,32 +4,14 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import ListItemButton from '@mui/material/ListItemButton';
 import Paper from '@mui/material/Paper';
 import ListSubheader from '@mui/material/ListSubheader';
-import { useState, useEffect } from "react";
+import { Todo } from '../../types/Todo';
 
 export default function CheckListComponent(props) {
-  const [checked, setChecked] = useState<readonly number[]>([]);
-
-  useEffect(() => {
-    if(checked.length == props.value.items.length){
-      props.onComplete();
-    }
-  }, );
-
-  const handleToggle = (index: number) => () => {
-    const currentIndex = checked.indexOf(index);
-    const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(index);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    console.log(newChecked);
-
-    setChecked(newChecked);
+  const handleToggle = (id: number) => () => {
+    props.onToggle(id);
   };
 
   return (
@@ -39,27 +21,27 @@ export default function CheckListComponent(props) {
         subheader={<ListSubheader>{props?.value?.name}
         </ListSubheader>}
       >
-        {props?.value?.items?.map((item: string, index: number) => {
-          const labelId = `transfer-list-item-${index}-label`;
+        {props?.value?.items?.map((item: Todo) => {
+          const labelId = `transfer-list-item-${item.id}-label`;
 
           return (
             <ListItem
-              key={index}
+              key={item.id}
               role="listitem"
-              button
-              onClick={handleToggle(index)}
+              onClick={handleToggle(item.id)}
             >
+               <ListItemButton role={undefined} onClick={handleToggle(item.id)} dense>
               <ListItemIcon>
                 <Checkbox
-                  checked={checked.indexOf(index) !== -1}
+                  edge="start"
+                  checked={item.done}
                   tabIndex={-1}
                   disableRipple
-                  inputProps={{
-                    'aria-labelledby': labelId,
-                  }}
+                  inputProps={{ 'aria-labelledby': labelId }}
                 />
               </ListItemIcon>
-              <ListItemText id={labelId} primary={`${item}`} />
+              <ListItemText id={labelId} primary={`${item.name}`} />
+            </ListItemButton>
             </ListItem>
           );
         })}
