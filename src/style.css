@@ -85,6 +85,10 @@
   width: 100%;
 }
 
+.todo-item-label {
+  user-select: text !important;
+}
+
 .add-todo-list-item {
   width: 100%;
 }

@@ -124,17 +124,16 @@ export default function CheckListComponent(props) {
               onMouseLeave={(e) => { e.target["timeoutId"] = setTimeout(() => { hideEditTodo(labelId, inputId) }, 4000) }}
               onMouseEnter={(e) => { clearTimeout(e.target["timeoutId"]) }}
             >
-              <ListItemButton role={undefined} dense>
+              <ListItemButton role={undefined} dense disableRipple>
                 <ListItemIcon onClick={() => handleToggle(item)}>
                   <Checkbox
                     edge="start"
                     checked={item.done}
                     tabIndex={-1}
-                    disableRipple
                     inputProps={{ 'aria-labelledby': labelId }}
                   />
                 </ListItemIcon>
-                <ListItemText id={labelId} primary={`${item.name}`} />
+                <ListItemText  className='todo-item-label' id={labelId} primary={`${item.name}`} />
                 <input
                   id={inputId}
                   className='todo-item-input'
