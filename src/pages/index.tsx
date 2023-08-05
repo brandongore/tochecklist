@@ -9,6 +9,7 @@ import { CheckListConfigType } from "../types/CheckListConfigType";
 import React from "react";
 import { Todo } from "../types/Todo";
 import SettingsDialog from "./components/settingsDialog";
+import { generateUniqueId } from "../helpers/helpers";
 
 function App() {
   const [config, setConfig] = useState<Config>({checklists: []} as Config);
@@ -64,30 +65,26 @@ function App() {
   }
 
   function hydrateChecklist(checklist: CheckListConfigType): CheckListType{
-    let check = {
+    let newChecklist = {
       id: generateUniqueId(),
       name: checklist.name,
       items: [...checklist.items.map((todo)=>hydrateTodo(todo))]
     }
 
-    return check;
+    return newChecklist;
   }
 
   function hydrateTodo(todo: string): Todo{
-    let hytodo = {
+    let newTodo = {
       id: generateUniqueId(),
-      name: todo,
+      name: todo.length > 0 ? todo : "NEW TODO",
       done: false
     }
 
-    return hytodo;
+    return newTodo;
   }
 
-  function generateUniqueId(){
-    return Math.floor(Math.random() * Date.now());
-  }
-
-  function updateChecklist(updatedChecklists: CheckListType[]) {
+  function updateChecklists(updatedChecklists: CheckListType[]) {
     setActiveTasksState(updatedChecklists);
   }
 
@@ -96,7 +93,8 @@ function App() {
       <h2>Choose a checklist below to start</h2>
       <SettingsDialog settings={config} onUpdateSetting={(newConfig)=>{setConfig(newConfig);}}></SettingsDialog>
       <AddChecklist items={config.checklists} onClick={(index) => addChecklist(index)}></AddChecklist>
-      <Agenda items={activeTasks} showCompleted={config.showCompleted} onUpdateChecklist={(checklists) => updateChecklist(checklists)}></Agenda>
+      <Agenda items={activeTasks} showCompleted={config.showCompleted} 
+        onUpdateChecklists={(checklists) => updateChecklists(checklists)}></Agenda>
       <AddTask onClick={(name) => addTask(name)}></AddTask>
     </div>
   );

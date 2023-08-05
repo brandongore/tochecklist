@@ -5,7 +5,7 @@
   font-weight: 400;
 
   color: #0f0f0f;
-  
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -21,19 +21,84 @@
   text-align: center;
 }
 
-.container> h2 {
+.container>h2 {
   margin-top: 2px;
   margin-bottom: 10px;
 }
 
-.settings-fab{
+.settings-fab {
   position: absolute;
   top: 5px;
   right: 20px;
 }
 
-.settings-button{
+.settings-button {
   background-color: white;
+}
+
+/* .checklist-list {
+  height: 36px;
+} */
+
+/* .checklist-list {
+  height: 36px;
+} */
+
+.todo-list-subheader {
+  line-height: 44px;
+}
+
+.todo-item,
+.todo-item>*:first-child {
+  height: 42px;
+}
+
+.todo-item .todo-action {
+  opacity: 0;
+}
+
+.todo-item:hover .todo-action {
+  opacity: 100%;
+  transition: opacity 0.4s;
+}
+
+.todo-action {
+  flex-grow: initial;
+  -webkit-flex-grow: initial;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.todo-action:hover {
+  background-color: initial;
+}
+
+.todo-action>button {
+  margin-right: 0px;
+}
+
+.todo-item-input {
+  padding-top: 6px;
+  padding-bottom: 4px;
+  padding-left: 6px;
+  padding-right: 6px;
+  width: 100%;
+}
+
+.add-todo-list-item {
+  width: 100%;
+}
+
+.add-todo-button {
+  position: absolute;
+  left: 4px;
+  top: 6px;
+}
+
+.delete-checklist-button {
+  position: absolute;
+  top: 4px;
+  right: 24px;
 }
 
 .logo {

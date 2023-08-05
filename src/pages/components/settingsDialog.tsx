@@ -35,7 +35,7 @@ export default function SettingsDialog(props) {
   };
 
   function updateSetting(field, value){
-    let newConfig = Object.assign({}, props);
+    let newConfig = Object.assign({}, props.settings);
     newConfig[field]= value;
     console.log(newConfig)
     props.onUpdateSetting(newConfig);
