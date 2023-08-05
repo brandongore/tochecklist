@@ -11,12 +11,33 @@ import { Todo } from '../../types/Todo';
 
 export default function CheckListComponent(props) {
   const handleToggle = (id: number) => () => {
-    props.onToggle(id);
+    updateChecklist(id);
   };
+
+  function updateChecklist(todoId: number) {
+    const updatedTodos = props?.value?.items?.map((checklistTodo: Todo) => {
+      if (checklistTodo.id == todoId) {
+        return {
+          ...checklistTodo,
+          done: !checklistTodo.done
+        }
+      }
+      return checklistTodo;
+    });
+
+    let updatedChecklist = {
+      ...props?.value,
+      items: updatedTodos,
+      complete: updatedTodos.every(todo => todo.done),
+      dateCompleted: Date.now()
+    }
+
+    props.onUpdateChecklist(updatedChecklist);
+  }
 
   return (
     <Paper sx={{ width: '100%', height: '100%', overflow: 'auto' }}>
-      
+
       <List dense component="div" role="list"
         subheader={<ListSubheader>{props?.value?.name}
         </ListSubheader>}
@@ -30,18 +51,18 @@ export default function CheckListComponent(props) {
               role="listitem"
               onClick={handleToggle(item.id)}
             >
-               <ListItemButton role={undefined} onClick={handleToggle(item.id)} dense>
-              <ListItemIcon>
-                <Checkbox
-                  edge="start"
-                  checked={item.done}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ 'aria-labelledby': labelId }}
-                />
-              </ListItemIcon>
-              <ListItemText id={labelId} primary={`${item.name}`} />
-            </ListItemButton>
+              <ListItemButton role={undefined} onClick={handleToggle(item.id)} dense>
+                <ListItemIcon>
+                  <Checkbox
+                    edge="start"
+                    checked={item.done}
+                    tabIndex={-1}
+                    disableRipple
+                    inputProps={{ 'aria-labelledby': labelId }}
+                  />
+                </ListItemIcon>
+                <ListItemText id={labelId} primary={`${item.name}`} />
+              </ListItemButton>
             </ListItem>
           );
         })}

@@ -8,7 +8,7 @@ import { CheckListType } from "../types/CheckListType";
 import { CheckListConfigType } from "../types/CheckListConfigType";
 import React from "react";
 import { Todo } from "../types/Todo";
-
+import SettingsDialog from "./components/settingsDialog";
 
 function App() {
   const [config, setConfig] = useState<Config>({checklists: []} as Config);
@@ -32,7 +32,7 @@ function App() {
 
       if (configExists) {
         const configJson = await fs.readTextFile('config.json', { dir: fs.BaseDirectory.Resource });
-        setConfig(JSON.parse(configJson))
+        setConfig(hydrateConfig(configJson))
         console.log(config.checklists);
       }
 
@@ -57,13 +57,19 @@ function App() {
     setActiveTasksState([...activeTasks, {id: generateUniqueId(), "name":"TODO", items:[hydrateTodo(name)]} as CheckListType]);
   }
 
+  function hydrateConfig(configJson: string): Config{
+    let parsedConfig: Config = JSON.parse(configJson);
+    let defaultConfig = Object.assign(new Config(), parsedConfig);
+    return defaultConfig;
+  }
+
   function hydrateChecklist(checklist: CheckListConfigType): CheckListType{
     let check = {
       id: generateUniqueId(),
       name: checklist.name,
       items: [...checklist.items.map((todo)=>hydrateTodo(todo))]
     }
-    console.log("check",check);
+
     return check;
   }
 
@@ -73,7 +79,7 @@ function App() {
       name: todo,
       done: false
     }
-    console.log("hytodo",hytodo);
+
     return hytodo;
   }
 
@@ -81,36 +87,16 @@ function App() {
     return Math.floor(Math.random() * Date.now());
   }
 
-  function updateTodo(checklistId, todoId) {
-    setActiveTasksState(activeTasks.map((checklist)=>{
-      if(checklist.id == checklistId){
-        const updatedTodos = checklist.items.map((todo)=>{
-          if(todo.id == todoId){
-            return {
-              ...todo,
-              done: !todo.done
-            }
-          }
-          return todo;
-        });
-
-        return {
-          ...checklist,
-          items: updatedTodos,
-          complete: updatedTodos.every(todo=>todo.done),
-          dateCompleted: Date.now()
-        }
-      }
-      return checklist;
-    }));
+  function updateChecklist(updatedChecklists: CheckListType[]) {
+    setActiveTasksState(updatedChecklists);
   }
 
   return (
     <div className="container">
-      
       <h2>Choose a checklist below to start</h2>
+      <SettingsDialog settings={config} onUpdateSetting={(newConfig)=>{setConfig(newConfig);}}></SettingsDialog>
       <AddChecklist items={config.checklists} onClick={(index) => addChecklist(index)}></AddChecklist>
-      <Agenda items={activeTasks} onToggle={(checklistId, todoId) => updateTodo(checklistId,todoId)}></Agenda>
+      <Agenda items={activeTasks} showCompleted={config.showCompleted} onUpdateChecklist={(checklists) => updateChecklist(checklists)}></Agenda>
       <AddTask onClick={(name) => addTask(name)}></AddTask>
     </div>
   );

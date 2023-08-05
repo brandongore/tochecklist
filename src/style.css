@@ -5,8 +5,7 @@
   font-weight: 400;
 
   color: #0f0f0f;
-  background-color: #f6f6f6;
-
+  
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -15,16 +14,26 @@
 }
 
 .container {
-  margin: 0;
+  margin: 0px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   text-align: center;
 }
 
-.container > h2 {
+.container> h2 {
   margin-top: 2px;
   margin-bottom: 10px;
+}
+
+.settings-fab{
+  position: absolute;
+  top: 5px;
+  right: 20px;
+}
+
+.settings-button{
+  background-color: white;
 }
 
 .logo {
