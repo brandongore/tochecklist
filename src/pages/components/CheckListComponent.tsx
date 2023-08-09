@@ -13,8 +13,11 @@ import PencilIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import { Button, IconButton } from '@mui/material';
 import { CheckListType } from '../../types/CheckListType';
+import ProgressTimer from './ProgressTimer';
+import { sendNotification } from "@tauri-apps/api/notification";
 
 export default function CheckListComponent(props) {
+
   function showEditTodo(labelFieldId: string, inputFieldId: string) {
     if (!document.getElementById(inputFieldId).hidden) {
       document.getElementById(labelFieldId).hidden = false;
@@ -86,6 +89,15 @@ export default function CheckListComponent(props) {
     props.onUpdateChecklist(updatedChecklist);
   }
 
+  function completeTimerOnChecklist() {
+    let updatedChecklist: CheckListType = {
+      ...props?.value,
+      timerComplete: true
+    }
+
+    props.onUpdateChecklist(updatedChecklist);
+  }
+
   function deleteChecklist() {
     props.onDeleteChecklist(props?.value);
   }
@@ -95,6 +107,19 @@ export default function CheckListComponent(props) {
       return " - " + new Date(dateCompleted).toUTCString();
     }
     return "";
+  }
+
+  function alertComplete(){
+    console.log("alertComplete");
+    sendNotification({
+      title: `ToChecklist`,
+      body: `Timers up for ${props?.value?.name}`,
+    });
+     (async ()=>{
+      const { UserAttentionType, appWindow } = await import("@tauri-apps/api/window");
+      await appWindow.requestUserAttention(UserAttentionType.Informational)
+    })();
+    completeTimerOnChecklist();
   }
 
   return (
@@ -159,6 +184,13 @@ export default function CheckListComponent(props) {
           );
         })}
       </List>
+      {(() => {
+          if(props?.value?.timerMinutes){
+            return (
+              <ProgressTimer timerDisabled={props?.value?.timerComplete} totalTime={props?.value?.timerMinutes} onTimerComplete={()=>{ alertComplete()}}></ProgressTimer>
+            );
+          }
+        })()}
     </Paper>
   );
 }

@@ -5,5 +5,7 @@ export interface CheckListType {
     name: string,
     items: Todo[],
     complete?: boolean,
-    dateCompleted?: Date
+    dateCompleted?: Date,
+    timerMinutes?: number,
+    timerComplete?: boolean
 }

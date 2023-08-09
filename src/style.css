@@ -105,6 +105,11 @@
   right: 24px;
 }
 
+.progress-timer-text{
+  font-weight: bold;
+  font-size: medium;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;

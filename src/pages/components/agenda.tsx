@@ -28,7 +28,7 @@ export default function Agenda(props) {
     return (
         <Box sx={{ padding: 1 }}>
             <Grid container spacing={0.5}>
-                {props?.items?.filter((checklist: CheckListType) => { return props?.showCompleted || !checklist.complete }).map((value: CheckListType, index: number) => {
+                {props?.items?.filter((checklist: CheckListType) => { return props?.showCompleted || !checklist.complete }).map((value: CheckListType) => {
                     return (
                         <Grid item xs={12} md={6}>
                             <CheckListComponent value={value}

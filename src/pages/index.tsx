@@ -55,7 +55,11 @@ function App() {
   }
 
   function addTask(name) {
-    setActiveTasksState([...activeTasks, {id: generateUniqueId(), "name":"TODO", items:[hydrateTodo(name)]} as CheckListType]);
+    setActiveTasksState([...activeTasks, hydrateChecklist({"name":"TODO", items:[name]})]);
+  }
+
+  function addTimedTask(name, minutes){
+    setActiveTasksState([...activeTasks,hydrateChecklist({"name":"TODO", items:[name], timerMinutes: minutes})]);
   }
 
   function hydrateConfig(configJson: string): Config{
@@ -65,10 +69,13 @@ function App() {
   }
 
   function hydrateChecklist(checklist: CheckListConfigType): CheckListType{
-    let newChecklist = {
+    let newChecklist: CheckListType = {
       id: generateUniqueId(),
       name: checklist.name,
-      items: [...checklist.items.map((todo)=>hydrateTodo(todo))]
+      items: [...checklist.items.map((todo)=>hydrateTodo(todo))],
+      complete: false,
+      timerMinutes: checklist.timerMinutes,
+      timerComplete: false,
     }
 
     return newChecklist;
@@ -95,7 +102,7 @@ function App() {
       <AddChecklist items={config.checklists} onClick={(index) => addChecklist(index)}></AddChecklist>
       <Agenda items={activeTasks} showCompleted={config.showCompleted} 
         onUpdateChecklists={(checklists) => updateChecklists(checklists)}></Agenda>
-      <AddTask onClick={(name) => addTask(name)}></AddTask>
+      <AddTask onAddNewTask={(name) => addTask(name)} onAddNewTimedTask={(name, minutes) => addTimedTask(name, minutes)}></AddTask>
     </div>
   );
 }
