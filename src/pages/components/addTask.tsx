@@ -29,6 +29,7 @@ export default function AddTask(props) {
       props.onAddNewTimedTask(newTask, minutes)
       let input: HTMLInputElement = document.querySelector<HTMLInputElement>("#task-input");
       input.value = "";
+      setOpen(false);
     }
   }
 
@@ -36,6 +37,7 @@ export default function AddTask(props) {
     const newMinutes = parseInt(event.target.value);
     if (newMinutes > 0) {
       setMinutes(parseInt(event.target.value))
+      
     }
   }
 

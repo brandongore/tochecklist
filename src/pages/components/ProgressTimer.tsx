@@ -19,11 +19,11 @@ export default function ProgressTimer(props) {
       return () => clearInterval(timerInterval);
     } else {
       timerInterval = setInterval(() => {
-        setRemainingTime(prevTime => prevTime + 60);
+        setRemainingTime(prevTime => prevTime + 1);
         if(totalMinutes > 0){
           setProgress(remainingTime/totalMinutes * 100);
         }
-      }, 60000);
+      }, 1000);
 
       return () => clearInterval(timerInterval);
     }
