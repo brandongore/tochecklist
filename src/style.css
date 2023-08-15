@@ -46,13 +46,26 @@
   height: 42px;
 }
 
-.todo-item .todo-action {
+.todo-item .todo-action{
   opacity: 0;
+  display:none;
 }
 
-.todo-item:hover .todo-action {
+.todo-item .todo-action.editing{
   opacity: 100%;
   transition: opacity 0.4s;
+  display:flex;
+}
+
+.todo-item .todo-action.not-editing {
+  opacity: 0;
+  display:none;
+}
+
+.todo-item:hover .todo-action.not-editing {
+  opacity: 100%;
+  transition: opacity 0.4s;
+  display:flex;
 }
 
 .todo-item > .todo-action {
@@ -76,6 +89,10 @@
   padding-left: 6px;
   padding-right: 6px;
   width: 100%;
+}
+
+.todo-item-input::placeholder {
+  color: white;
 }
 
 .todo-item-label {

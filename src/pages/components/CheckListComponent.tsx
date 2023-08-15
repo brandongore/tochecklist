@@ -7,7 +7,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
 import Paper from '@mui/material/Paper';
 import ListSubheader from '@mui/material/ListSubheader';
-import { Todo } from '../../types/Todo';
+import { Todo, UITodo } from '../../types/Todo';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PencilIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
@@ -15,61 +15,122 @@ import { Button, IconButton } from '@mui/material';
 import { CheckListType } from '../../types/CheckListType';
 import ProgressTimer from './ProgressTimer';
 import { sendNotification } from "@tauri-apps/api/notification";
+import DoneIcon from '@mui/icons-material/Done';
+import CloseIcon from '@mui/icons-material/Close';
+import { useState } from 'react';
 
 export default function CheckListComponent(props) {
+  const [uiTODOS, setUITODOS] = useState<UITodo[]>(props?.value?.items.map((todo)=>new UITodo(todo)));
 
-  function showEditTodo(labelFieldId: string, inputFieldId: string) {
-    if (!document.getElementById(inputFieldId).hidden) {
-      document.getElementById(labelFieldId).hidden = false;
-      document.getElementById(inputFieldId).hidden = true;
-    }
-    else {
-      document.getElementById(labelFieldId).hidden = true;
-      document.getElementById(inputFieldId).hidden = false;
-    }
-
+  function toggleEditTodo(todo: UITodo) {
+    let updateTodos = uiTODOS.map((uiTodo)=>{
+      if(uiTodo.id == todo.id){
+        return {...todo, editing: !todo.editing};
+      }
+      return uiTodo;
+    })
+    setUITODOS(updateTodos);
   };
 
-  function hideEditTodo(labelFieldId: string, inputFieldId: string) {
-    if (document.getElementById(labelFieldId) && document.getElementById(inputFieldId)) {
-      document.getElementById(labelFieldId).hidden = false;
-      document.getElementById(inputFieldId).hidden = true;
-    }
-  };
+  function acceptEditTodo(todo: UITodo){
+    toggleEditTodo(todo);
+    updateTodos(uiTODOS);
+  }
 
-  function handleToggle(todo: Todo) {
+  function cancelEditTodo(todo: UITodo){
+    toggleEditTodo(todo);
+    revertTodos(uiTODOS);
+  }
+
+  function handleToggle(todo: UITodo) {
     let updatedTodo = { ...todo };
     updatedTodo.done = !todo.done
-    updateTodos(updatedTodo);
+    updateTodo(updatedTodo);
   };
 
-  function updateTodoName(event, todo: Todo) {
+  function updateTodoName(event, todo: UITodo) {
     console.log(event.target.value);
     let updatedTodo = { ...todo };
     updatedTodo.name = event.target.value;
-    updateTodos(updatedTodo);
+    updateUITodos(updatedTodo);
   };
 
-  function deleteTodo(event, todo: Todo) {
-    clearTimeout(event.target["timeoutId"]);
+  function deleteTodo(todo: UITodo) {
     const updatedTodos = props?.value?.items?.filter((checklistTodo: Todo) => {
       return checklistTodo.id != todo.id;
     });
 
+    const updatedUITodos = updatedTodos.map((todo)=>new UITodo(todo))
+
     updateChecklist(updatedTodos);
+    setUITODOS(updatedUITodos);
   };
 
   function addTodo() {
     const updatedTodos = [...props?.value?.items, Object.assign({}, new Todo())];
 
+    const updatedUITodos = updatedTodos.map((todo)=>new UITodo(todo))
+
     updateChecklist(updatedTodos);
+    setUITODOS(updatedUITodos);
   }
 
-  function updateTodos(updatedTodo: Todo) {
+  function updateUITodos(updatedTodo: UITodo) {
+    const updatedTodos = uiTODOS.map((checklistTodo: UITodo) => {
+      if (checklistTodo.id == updatedTodo.id) {
+        return updatedTodo
+      }
+      return checklistTodo;
+    });
+
+    setUITODOS(updatedTodos);
+  };
+
+  function revertTodos(updatedTodos: UITodo[]) {
+    const existingTodos = props?.value?.items;
+    const newTodos = updatedTodos.map((checklistTodo: UITodo) => {
+      let newTodo = {...checklistTodo};
+      for(var i = 0; i<existingTodos.length;i++){
+        if (newTodo.id == existingTodos[i].id) {
+          return {
+            id: newTodo.id,
+            name: existingTodos[i].name,
+            done: newTodo.done,
+            editing: false
+          }
+        }
+      }
+      return newTodo;
+    });
+
+    setUITODOS(newTodos);
+  };
+
+  function updateTodos(updatedTodos: UITodo[]) {
+    const newTodos = props?.value?.items?.map((checklistTodo: Todo) => {
+      let newTodo = {...checklistTodo};
+      for(var i = 0; i<updatedTodos.length;i++){
+        if (newTodo.id == updatedTodos[i].id) {
+          return {
+            id: updatedTodos[i].id,
+            name: updatedTodos[i].name,
+            done: updatedTodos[i].done
+          }
+        }
+      }
+      return newTodo;
+    });
+
+    updateChecklist(newTodos);
+  };
+
+  function updateTodo(updatedTodo: UITodo) {
     const updatedTodos = props?.value?.items?.map((checklistTodo: Todo) => {
       if (checklistTodo.id == updatedTodo.id) {
         return {
-          ...updatedTodo
+          id: updatedTodo.id,
+          name: updatedTodo.name,
+          done: updatedTodo.done
         }
       }
       return checklistTodo;
@@ -137,20 +198,21 @@ export default function CheckListComponent(props) {
           </IconButton>
         </ListSubheader>}
       >
-        {props?.value?.items?.map((item: Todo) => {
+        {uiTODOS.map((item: UITodo) => {
           const labelId = `todo-list-item-${item.id}-label`;
           const inputId = `todo-list-item-${item.id}-input`;
+          let notEditingClass = `todo-action ${item.editing ? '' : 'not-editing'}`;
+          let editingClass = `todo-action ${item.editing ? 'editing' : ''}`;
 
           return (
             <ListItem
               key={item.id}
               role="listitem"
               className='todo-item'
-              onMouseLeave={(e) => { e.target["timeoutId"] = setTimeout(() => { hideEditTodo(labelId, inputId) }, 4000) }}
-              onMouseEnter={(e) => { clearTimeout(e.target["timeoutId"]) }}
             >
               <ListItemButton role={undefined} dense disableRipple>
                 <ListItemIcon onClick={() => handleToggle(item)}>
+                  
                   <Checkbox
                     edge="start"
                     checked={item.done}
@@ -158,26 +220,35 @@ export default function CheckListComponent(props) {
                     inputProps={{ 'aria-labelledby': labelId }}
                   />
                 </ListItemIcon>
-                <ListItemText  className='todo-item-label' id={labelId} primary={`${item.name}`} />
+                <ListItemText hidden={item.editing} className='todo-item-label' id={labelId} primary={`${item.name.length > 0 ? item.name : "Enter a new task..."}`} />
                 <input
                   id={inputId}
                   className='todo-item-input'
-                  hidden
+                  hidden={!item.editing}
                   onChange={(e) => updateTodoName(e, item)}
-                  onBlur={() => hideEditTodo(labelId, inputId)}
-                  onKeyUp={(keypressEvent) => { if (keypressEvent.key == 'Enter') { hideEditTodo(labelId, inputId) } }}
+                  onKeyUp={(keypressEvent) => { if (keypressEvent.key == 'Enter') { acceptEditTodo(item) } }}
                   placeholder="Enter a new task..."
                   value={item.name}
                 />
               </ListItemButton>
-              <ListItemButton className='todo-action' role={'edit'} dense disableRipple disableGutters onClick={() => showEditTodo(labelId, inputId)}>
+              <ListItemButton className={notEditingClass} role={'edit'} dense disableRipple disableGutters onClick={() => toggleEditTodo(item)}>
                 <IconButton edge="end" aria-label="edit" size="small">
                   <PencilIcon />
                 </IconButton>
               </ListItemButton>
-              <ListItemButton className='todo-action' role={'delete'} dense disableRipple disableGutters onClick={() => deleteTodo(event, item)}>
+              <ListItemButton className={notEditingClass} role={'delete'} dense disableRipple disableGutters onClick={() => deleteTodo(item)}>
                 <IconButton edge="end" aria-label="delete" size="small">
                   <DeleteIcon />
+                </IconButton>
+              </ListItemButton>
+              <ListItemButton className={editingClass} role={'accept'} dense disableRipple disableGutters onClick={() => acceptEditTodo(item)}>
+                <IconButton edge="end" aria-label="accept" size="small">
+                  <DoneIcon />
+                </IconButton>
+              </ListItemButton>
+              <ListItemButton className={editingClass} role={'cancel'} dense disableRipple disableGutters onClick={() => cancelEditTodo(item)}>
+                <IconButton edge="end" aria-label="cancel" size="small">
+                  <CloseIcon />
                 </IconButton>
               </ListItemButton>
             </ListItem>
