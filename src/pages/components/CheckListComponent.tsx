@@ -20,7 +20,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useState } from 'react';
 
 export default function CheckListComponent(props) {
-  const [uiTODOS, setUITODOS] = useState<UITodo[]>(props?.value?.items.map((todo)=>new UITodo(todo)));
+  const defaultUITodos = (defaultValue) => {
+    if(props?.value?.items){
+      return [...props?.value?.items].map((todo)=>new UITodo(todo));
+    }
+    return defaultValue;
+  }
+
+  const [uiTODOS, setUITODOS] = useState<UITodo[]>(defaultUITodos([]));
 
   function toggleEditTodo(todo: UITodo) {
     let updateTodos = uiTODOS.map((uiTodo)=>{
